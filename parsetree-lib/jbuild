@@ -1,6 +1,6 @@
 (library
  ((name viewast)
-  (public_name viewast)
+  (public_name ppx_view.ast)
   (libraries (ocamlcommon migrate_parsetree viewlib))))
 
 (rule

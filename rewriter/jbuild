@@ -1,5 +1,5 @@
 (library
  ((name ppx_view_rewriter)
-  (public_name ppx_view_rewriter)
+  (public_name ppx_view)
   (libraries (ocamlcommon migrate_parsetree ppx_view_common))
   (ppx_runtime_libraries (viewlib))))
