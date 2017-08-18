@@ -1,7 +1,9 @@
 (library
  ((name viewast)
   (public_name ppx_view.ast)
-  (libraries (ocamlcommon migrate_parsetree viewlib))))
+  (libraries (compiler-libs.common
+              ocaml-migrate-parsetree
+              viewlib))))
 
 (rule
  ((targets (parseview.mli  parseview.ml ast_viewer.mli ast_viewer.ml))

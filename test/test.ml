@@ -14,7 +14,7 @@ let%expect_test "match failure" =
       print_string "matched"
   with e ->
     print_string (Printexc.to_string e)
-  end;[%expect {|"Match_failure test.ml:12:18"|}]
+  end;[%expect {|"Match_failure .*test.ml:12:18" (regexp)|}]
 
 let%expect_test "match simple" =
   let match_3 = function%view
