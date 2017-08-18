@@ -1,0 +1,4 @@
+(library
+ ((name ppx_view_test)
+  (libraries (expect_test_helpers ocamlcommon migrate_parsetree viewast))
+  (preprocess (pps (ppx_expect ppx_view_rewriter -no-check)))))

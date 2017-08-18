@@ -1,0 +1,4 @@
+(library
+ ((name viewlib)
+  (public_name viewlib)
+  (libraries (ocamlcommon migrate_parsetree))))

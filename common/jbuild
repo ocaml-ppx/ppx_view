@@ -1,0 +1,3 @@
+(library
+ ((name ppx_view_common)
+  (libraries (ocamlcommon migrate_parsetree))))
