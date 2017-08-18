@@ -1,7 +1,7 @@
 opam-version: "1.2"
 maintainer: "xclerc@janestreet.com"
 authors: ["Xavier Clerc"]
-license: "BSD3"
+license: "Apache-2.0"
 homepage: "https://github.com/ocaml-ppx/ppx_view"
 bug-reports: "https://github.com/ocaml-ppx/ppx_view"
 dev-repo: "git://github.com/ocaml-ppx/ppx_view.git"
