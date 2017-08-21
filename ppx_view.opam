@@ -4,7 +4,7 @@ authors: ["Xavier Clerc"]
 license: "Apache-2.0"
 homepage: "https://github.com/ocaml-ppx/ppx_view"
 bug-reports: "https://github.com/ocaml-ppx/ppx_view"
-dev-repo: "git://github.com/ocaml-ppx/ppx_view.git"
+dev-repo: "https://github.com/ocaml-ppx/ppx_view.git"
 build: [
   ["jbuilder" "build" "-p" name "-j" jobs]
 ]
