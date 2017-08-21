@@ -14,11 +14,7 @@ let make reader_func writer_func =
   in
   let add_from_file path =
     let full_path = Filename.concat !Generator_args.data_path path in
-    let chan = open_in full_path in
-    let lexbuf = Lexing.from_channel chan in
-    let file_items = reader_func lexbuf in
-    add_list file_items;
-    close_in chan
+    add_list (reader_func full_path)
   in
   let write path =
     let full_path = Filename.concat !Generator_args.dest_path path in
@@ -30,3 +26,9 @@ let make reader_func writer_func =
     close_out chan
   in
   { add; add_from_file; write; }
+
+let make_signature () =
+  make Generator_source.parse_signature Generator_source.print_signature
+
+let make_structure () =
+  make Generator_source.parse_structure Generator_source.print_structure

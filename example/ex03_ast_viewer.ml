@@ -22,6 +22,16 @@ let twice_mapper =
   in
   { super with expr; pat; }
 
+let rec print_string_list expr =
+  let open Parseview in
+  match%view expr with
+  | Pexp_construct ({ txt = Lident "::"; _ },
+                    Some (Pexp_tuple [Pexp_constant (Pconst_string (hd, _));
+                                      tl])) ->
+    print_endline hd;
+    print_string_list tl
+  | _ ->
+    ()
 
 let run () =
   let open Location in
@@ -47,13 +57,4 @@ let run () =
   let abc_def =
     cons abc (cons def nil)
   in
-  let abc_def =
-    [Ast_helper.Str.eval abc_def] in
-  let print fmt structure =
-    Pprintast.structure fmt structure;
-    Format.pp_print_newline fmt ();
-    Format.pp_print_flush fmt ()
-  in
-  let fmt = Format.std_formatter in
-  print fmt abc_def;
-  print fmt (twice_mapper.structure twice_mapper abc_def)
+  print_string_list (twice_mapper.expr twice_mapper abc_def)

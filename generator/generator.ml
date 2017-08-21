@@ -21,17 +21,13 @@ let make_view a b c =
     (make_ident_loc no_loc ~modname:"View" "t")
     [a; b; c]
 
-let parseview_signature =
-  Generator_list.make Parse.interface Pprintast.signature
+let parseview_signature = Generator_list.make_signature ()
 
-let parseview_structure =
-  Generator_list.make Parse.implementation Pprintast.structure
+let parseview_structure = Generator_list.make_structure ()
 
-let ast_viewer_signature =
-  Generator_list.make Parse.interface Pprintast.signature
+let ast_viewer_signature = Generator_list.make_signature ()
 
-let ast_viewer_structure =
-  Generator_list.make Parse.implementation Pprintast.structure
+let ast_viewer_structure = Generator_list.make_structure ()
 
 let add_ast_viewer_element, copy_ast_viewer_elements =
   let elements = ref StringMap.empty in
@@ -448,9 +444,7 @@ let process_mli ~path ~ignored_types ~desc_shortcuts ~seen =
   if !Generator_args.verbose then
     Printf.printf "file %S...\n%!" path;
   let full_path = Filename.concat !Generator_args.ocaml_where_path path in
-  let channel = open_in full_path in
-  let lexbuf = Lexing.from_channel channel in
-  let signature_items = Parse.interface lexbuf in
+  let signature_items = Generator_source.parse_signature full_path in
   let module_name =
     String.capitalize_ascii
       (Filename.(chop_extension (basename path)))
@@ -556,7 +550,6 @@ let process_mli ~path ~ignored_types ~desc_shortcuts ~seen =
            type_decls)
       seen
   in
-  close_in channel;
   seen
 
 

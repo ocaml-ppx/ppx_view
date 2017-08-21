@@ -6,7 +6,6 @@ type 'a t = {
     write         : string -> unit;
   }
 
-val make
-   : (Lexing.lexbuf -> 'a list)
-  -> (Format.formatter -> 'a list -> unit)
-  -> 'a t
+val make_signature : unit -> Ast_404.Parsetree.signature_item t
+
+val make_structure : unit -> Ast_404.Parsetree.structure_item t
