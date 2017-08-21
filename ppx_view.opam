@@ -8,6 +8,7 @@ dev-repo: "https://github.com/ocaml-ppx/ppx_view.git"
 build: [
   ["jbuilder" "build" "-p" name "-j" jobs]
 ]
+available: [ ocaml-version >= "4.04" ]
 depends: [
   "jbuilder" {build & >= "1.0+beta7"}
   "ocaml-migrate-parsetree"
