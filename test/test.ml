@@ -159,3 +159,80 @@ let%expect_test "match with custom constructor" =
     match_custom' (Int   3);
     match_custom' (Nothing);
   end;[%expect {|()3._3_|}]
+
+let%expect_test "match with polymorphic variant" =
+  let open Viewlib in
+  let int : (int, 'i, 'o) View.t -> ([> `Int of int], 'i, 'o) View.t =
+    fun view value ->
+      match value with
+      | `Int i -> view i
+      | _      -> View.error
+  in
+  let unit : (unit, 'i, 'i) View.t -> ([> `Unit of unit], 'i, 'i) View.t =
+    fun view value ->
+      match value with
+      | `Unit () -> view ()
+      | _        -> View.error
+  in
+  let nothing : ([> `Nothing], 'i, 'i) View.t =
+    fun value ->
+      match value with
+      | `Nothing -> View.unit ()
+      | _        -> View.error
+  in
+  let useless : ([`Int of int | `Unit of unit | `Nothing], 'i, 'i) View.t =
+    fun value ->
+      match value with
+      | `Int _             -> View.error
+      | `Unit _ | `Nothing -> View.unit ()
+  in
+  let match_custom = function%view
+    | Unit () ->
+      print_string "()"
+    | Int i ->
+      print_int i
+    | Nothing ->
+      print_string "."
+    | _ ->
+      print_string "KO"
+  in
+  let match_custom' = function%view
+    | Useless ->
+      print_string "_"
+    | Int i ->
+      print_int i
+    | _ ->
+      print_string "KO"
+  in
+  begin
+    match_custom  (`Unit ());
+    match_custom  (`Int   3);
+    match_custom  (`Nothing);
+    match_custom' (`Unit ());
+    match_custom' (`Int   3);
+    match_custom' (`Nothing);
+  end;[%expect {|()3._3_|}]
+
+let%expect_test "match with object" =
+  let open Viewlib in
+  let int : (int, 'i, 'o) View.t -> (< int: int; .. >, 'i, 'o) View.t =
+    fun view value ->
+      view value#int
+  in
+  let unit : (unit, 'i, 'i) View.t -> (< unit: unit; .. >, 'i, 'i) View.t =
+    fun view value ->
+      view value#unit
+  in
+  let match_custom = function%view
+    | Int (3 as i) ->
+      print_int i
+    | Unit () ->
+      print_string "()"
+    | _ ->
+      print_string "KO"
+  in
+  begin
+    let make x = object method unit = () method int = x end in
+    match_custom (make 1);
+    match_custom (make 3);
+  end;[%expect {|()3|}]
