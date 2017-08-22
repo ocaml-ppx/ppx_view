@@ -20,6 +20,8 @@ let%expect_test "match simple" =
   let match_3 = function%view
     | Pexp_constant (Pconst_integer ("3", _)) ->
       print_string "3"
+    | Pexp_tuple _ ->
+      print_string "tuple"
     | _ ->
       print_string "KO"
   in
@@ -99,3 +101,61 @@ let%expect_test "match with record" =
   begin
     match_ident (ident "x");
   end;[%expect {|x|}]
+
+type custom = Int of int | Unit of unit | Nothing
+
+let%expect_test "match with custom constructor" =
+  let open Viewlib in
+  let int : (int, 'i, 'o) View.t -> (custom, 'i, 'o) View.t =
+    fun view value ->
+      match value with
+      | Int   i -> view i
+      | Unit  _ -> View.error
+      | Nothing -> View.error
+  in
+  let unit : (unit, 'i, 'i) View.t -> (custom, 'i, 'i) View.t =
+    fun view value ->
+      match value with
+      | Int   _ -> View.error
+      | Unit () -> view ()
+      | Nothing -> View.error
+  in
+  let nothing : (custom, 'i, 'i) View.t =
+    fun value ->
+      match value with
+      | Int   _ -> View.error
+      | Unit () -> View.error
+      | Nothing -> View.unit ()
+  in
+  let useless : (custom, 'i, 'i) View.t =
+    fun value ->
+      match value with
+      | Int _            -> View.error
+      | Unit _ | Nothing -> View.unit ()
+  in
+  let match_custom = function%view
+    | Unit () ->
+      print_string "()"
+    | Int i ->
+      print_int i
+    | Nothing ->
+      print_string "."
+    | _ ->
+      print_string "KO"
+  in
+  let match_custom' = function%view
+    | Useless ->
+      print_string "_"
+    | Int i ->
+      print_int i
+    | _ ->
+      print_string "KO"
+  in
+  begin
+    match_custom  (Unit ());
+    match_custom  (Int   3);
+    match_custom  (Nothing);
+    match_custom' (Unit ());
+    match_custom' (Int   3);
+    match_custom' (Nothing);
+  end;[%expect {|()3._3_|}]
