@@ -26,15 +26,15 @@ type ('matched, 'input, 'output) t = 'matched -> ('input, 'output) variables_fun
 val guard_failed : unit -> 'a
 
 val case
-   : ('m, 'i, 'o) t
-  -> ('o variables -> 'r)
-  -> ('m, 'i, 'r -> unit) t
+   : ('m, unit, 'p) t
+  -> ('p variables -> 'r)
+  -> 'm -> 'r match_result
 
 val match_
    : (string * int * int)
-  -> ('m, unit, 'o -> unit) t list
+  -> ('m -> 'r match_result) list
   -> 'm
-  -> 'o
+  -> 'r
 
 
 val __ : ('m, 'i, 'm -> 'i) t
