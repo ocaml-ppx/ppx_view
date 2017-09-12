@@ -1,5 +1,5 @@
-open Migrate_parsetree.Ast_404
 open Ppx_view_common.Ast_utils
+open Ppx_view_common.Ast_utils.Fixed_ast
 open Ppx_view_common.String_utils
 
 
@@ -578,7 +578,7 @@ let () =
        ast_viewer_structure.Generator_list.add open_str;
        parseview_signature.Generator_list.add open_sig;
        parseview_structure.Generator_list.add open_str)
-    [make_open Longident.(Ldot (Lident "Migrate_parsetree", "Ast_404"));
+    [make_open Longident.(Ldot (Lident "Migrate_parsetree", "Ast_" ^ fixed));
      make_open Longident.(Lident "Viewlib")];
   (* add manually-defined elememts to Ast_viewer *)
   ast_viewer_signature.Generator_list.add_from_file "ast_viewer_const_mli-src";

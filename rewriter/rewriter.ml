@@ -1,5 +1,5 @@
-open Migrate_parsetree.Ast_404
 open Ppx_view_common.Ast_utils
+open Ppx_view_common.Ast_utils.Fixed_ast
 
 
 (* module paths *)
@@ -441,5 +441,5 @@ let mapper =
 let () =
   Migrate_parsetree.Driver.register
     ~name:"view_pattern"
-    (module Migrate_parsetree.OCaml_404)
+    (module Fixed_ocaml)
     (fun _ _ -> mapper)

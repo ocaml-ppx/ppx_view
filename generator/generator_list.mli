@@ -6,6 +6,10 @@ type 'a t = {
     write         : string -> unit;
   }
 
-val make_signature : unit -> Ast_404.Parsetree.signature_item t
+val make_signature
+   : unit
+  -> Ppx_view_common.Ast_utils.Fixed_ast.Parsetree.signature_item t
 
-val make_structure : unit -> Ast_404.Parsetree.structure_item t
+val make_structure
+   : unit
+  -> Ppx_view_common.Ast_utils.Fixed_ast.Parsetree.structure_item t
