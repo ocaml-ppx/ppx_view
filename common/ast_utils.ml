@@ -1,5 +1,8 @@
-open Migrate_parsetree.Ast_404
+module Fixed_ocaml = Migrate_parsetree.OCaml_404
+module Fixed_ast = Migrate_parsetree.Ast_404
+open Fixed_ast
 
+let fixed = "404"
 
 let make_str s =
   { Location.txt = s; loc = Location.none; }

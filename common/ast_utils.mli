@@ -1,5 +1,9 @@
-open Migrate_parsetree.Ast_404
+module Fixed_ocaml : module type of Migrate_parsetree.OCaml_404
+module Fixed_ast : module type of Migrate_parsetree.Ast_404
+open Fixed_ast
 
+
+val fixed : string
 
 val make_str
    : string

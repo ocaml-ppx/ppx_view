@@ -2,18 +2,18 @@
 
 val parse_signature
    : string
-  -> Migrate_parsetree.Ast_404.Parsetree.signature
+  -> Ppx_view_common.Ast_utils.Fixed_ast.Parsetree.signature
 
 val parse_structure
    : string
-  -> Migrate_parsetree.Ast_404.Parsetree.structure
+  -> Ppx_view_common.Ast_utils.Fixed_ast.Parsetree.structure
 
 val print_signature
    : Format.formatter
-  -> Migrate_parsetree.Ast_404.Parsetree.signature
+  -> Ppx_view_common.Ast_utils.Fixed_ast.Parsetree.signature
   -> unit
 
 val print_structure
    : Format.formatter
-  -> Migrate_parsetree.Ast_404.Parsetree.structure
+  -> Ppx_view_common.Ast_utils.Fixed_ast.Parsetree.structure
   -> unit

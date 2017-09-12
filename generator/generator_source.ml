@@ -23,7 +23,7 @@ let parse_signature path =
       | Migrate_parsetree_ast_io.Intf ((module V), ast) ->
         (Migrate_parsetree_versions.migrate
            (module V)
-           (module Migrate_parsetree.OCaml_404)).copy_signature ast
+           (module Ppx_view_common.Ast_utils.Fixed_ocaml)).copy_signature ast
       | Migrate_parsetree_ast_io.Impl _ ->
         failwith "unexpected structure")
 
@@ -33,20 +33,20 @@ let parse_structure path =
       | Migrate_parsetree_ast_io.Impl ((module V), ast) ->
         (Migrate_parsetree_versions.migrate
            (module V)
-           (module Migrate_parsetree.OCaml_404)).copy_structure ast
+           (module Ppx_view_common.Ast_utils.Fixed_ocaml)).copy_structure ast
       | Migrate_parsetree_ast_io.Intf _ ->
         failwith "unexpected signature")
 
-let migrate_from_404 =
+let migrate_from_fixed =
   Migrate_parsetree_versions.migrate
-    (module Migrate_parsetree.OCaml_404)
+    (module Ppx_view_common.Ast_utils.Fixed_ocaml)
     (module Migrate_parsetree.OCaml_current)
 
 let print f fmt conv x =
   f fmt (conv x)
 
 let print_signature fmt sign =
-  print Pprintast.signature fmt migrate_from_404.copy_signature sign
+  print Pprintast.signature fmt migrate_from_fixed.copy_signature sign
 
 let print_structure fmt struc =
-  print Pprintast.structure fmt migrate_from_404.copy_structure struc
+  print Pprintast.structure fmt migrate_from_fixed.copy_structure struc
