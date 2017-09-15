@@ -1,6 +1,7 @@
 A ppx rewriter that provides pattern matching on abstract types by
 transforming patterns into views/expressions.
 
+
 Syntax
 ------
 
@@ -33,10 +34,11 @@ Viewlib.View.match_ __POS__
 
 where `__` is used to capture the variable.
 
+
 Mapping
 -------
 `ppx_view` applies the following mapping:
-     
+
 - a literal constant `c` of type `typ` is mapped to `View.typ c`;
 - an interval pattern `c1..c2` is mapped to `View.interval e1 e2`
   where `ci` is mapped to `ei`;
@@ -55,7 +57,7 @@ Mapping
   - `()` is mapped to `View.unit`;
   - `true` is mapped to `View.true_`;
   - `false` is mapped to `View.false_`.
-  
+
 Note: the following patterns are currently not supported:
 
 - polymorphic variants;
