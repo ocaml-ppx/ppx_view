@@ -106,6 +106,7 @@ let predefined_idents = [
   "()",    make_ident ~modname:Module.view "unit";
   "true",  make_ident ~modname:Module.view "true_";
   "false", make_ident ~modname:Module.view "false_";
+  "Not",   make_ident ~modname:Module.view "not";
 ]
 
 
