@@ -140,3 +140,8 @@ match%view expr with
 
 *Not* patterns cannot contain variables.
 
+
+Limitations
+-----------
+The major limitations of view patterns are the lack of checks for
+non-redundancy and exhaustivity.
