@@ -3,7 +3,8 @@ let example_functions = [
   Ex02_combinator.run;
   Ex03_ast_viewer.run;
   Ex04_ident.run;
-  Ex05_combinator_again.run;
+  Ex05_not.run;
+  Ex06_combinator_again.run;
 ]
 
 let () =

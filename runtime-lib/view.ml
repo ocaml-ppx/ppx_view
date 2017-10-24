@@ -87,6 +87,11 @@ let tuple4 view1 view2 view3 view4 (value1, value2, value3, value4) =
   >>+ view3 value3
   >>+ view4 value4
 
+let not view value vars =
+  match view value vars with
+  | Ok _  -> Error
+  | Error -> Ok vars
+
 
 let constant const value =
   if value = const then ok else error
