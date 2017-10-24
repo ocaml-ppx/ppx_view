@@ -27,8 +27,8 @@ Technically, the above expression is rewritten into:
 ```ocaml
 Viewlib.View.match_ __POS__
     [Viewlib.View.case (constr Viewlib.View.__)
-       (fun (Viewlib.View.Var_cons
-          (var,Viewlib.View.Var_nil ))  -> var)] expr
+       (fun (Viewlib.View.Var_snoc (Viewlib.View.Var_nil, var)) -> var)]
+    expr
 ```
 
 where `__` is used to capture the variable.
