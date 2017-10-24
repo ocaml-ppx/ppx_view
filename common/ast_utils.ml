@@ -11,14 +11,14 @@ let uncapitalize_str str =
   { str with Location.txt = String_utils.safe_uncapitalize str.Location.txt; }
 
 
-let make_ident ?(modname = "") name =
+let make_ident ?(modname = "") ~name () =
   if modname = "" then
     Longident.Lident name
   else
     Longident.Ldot (Lident modname, name)
 
-let make_ident_loc loc ?(modname = "") name =
-  let txt = make_ident ~modname name in
+let make_ident_loc loc ?(modname = "") ~name () =
+  let txt = make_ident ~modname ~name () in
   { Location.txt; loc; }
 
 
@@ -37,22 +37,22 @@ let make_exp_construct loc ident args =
      | [one] -> Some one
      | _     -> Some (Ast_helper.Exp.tuple args))
 
-let make_exp_ident loc ?(modname = "") name =
+let make_exp_ident loc ?(modname = "") ~name () =
   Ast_helper.Exp.ident
     ~loc
-    (make_ident_loc loc ~modname name)
+    (make_ident_loc loc ~modname ~name ())
 
-let make_exp_fun labelled param_name body =
+let make_exp_fun ~labelled ~param_name body =
   Ast_helper.Exp.fun_
     (if labelled then Labelled param_name else Nolabel)
     None
     (Ast_helper.Pat.var { txt = param_name; loc = Location.none; })
     body
 
-let make_exp_funs labelled param_names body =
+let make_exp_funs ~labelled ~param_names body =
   List.fold_right
     (fun param_name acc ->
-       make_exp_fun labelled param_name acc)
+       make_exp_fun ~labelled ~param_name acc)
     param_names
     body
 
@@ -60,9 +60,9 @@ let make_exp_list l =
   let no_loc = Location.none in
   List.fold_right
     (fun expr acc ->
-       make_exp_construct no_loc (make_ident "::") [expr; acc])
+       make_exp_construct no_loc (make_ident ~name:"::" ()) [expr; acc])
     l
-    (make_exp_construct no_loc (make_ident "[]") [])
+    (make_exp_construct no_loc (make_ident ~name:"[]" ()) [])
 
 
 let make_pat_construct loc ident args =
@@ -74,7 +74,7 @@ let make_pat_construct loc ident args =
      | [one] -> Some one
      | _     -> Some (Ast_helper.Pat.tuple args))
 
-let make_pat_var loc name =
+let make_pat_var loc ~name =
   Ast_helper.Pat.var
     ~loc
     { txt = name; loc; }
@@ -103,8 +103,8 @@ let make_typ_constr ~module_name ~type_name ~type_params =
 let make_typ_tuple l =
   Ast_helper.Typ.tuple l
 
-let make_typ_var s =
-  Ast_helper.Typ.var s
+let make_typ_var ~name =
+  Ast_helper.Typ.var name
 
 
 (* [qualify_core_type_desc ~types desc] qualifies types appearing in [desc]
