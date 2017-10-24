@@ -28,10 +28,9 @@ let ppx_error_unsupported_pattern loc kind =
 let rec extract_view_attribute_fields = function
   | ({ Location.txt = "view"; loc; }, payload) :: _ ->
     begin match payload with
-    | Parsetree.PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_record (fields, None);
-                                                 _ },
-                                               _);
-                        _ }] ->
+    | Parsetree.PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_record (fields,
+                                                                          None);
+                                                 _ }, _); _ }] ->
       Some fields
     | _ ->
       ppx_error loc "invalid 'view' payload"
@@ -123,7 +122,8 @@ let transl_constructor : Longident.t -> Longident.t = function
   | (Lapply _) as li ->
     li
 
-let transl_ident_loc : Longident.t Asttypes.loc -> Longident.t Asttypes.loc = function
+let transl_ident_loc : Longident.t Asttypes.loc -> Longident.t Asttypes.loc =
+  function
   | { txt; _ } as li ->
     { li with txt = transl_constructor txt; }
 
@@ -161,7 +161,8 @@ let rec transl_pattern patt =
       (fun field (acc_expr, acc_vars) ->
          match field with
          | { Location.txt = Longident.Lident label; loc = label_loc; },
-           { Parsetree.pexp_desc = Pexp_ident { txt = Lident var; loc = var_loc; }; _ } ->
+           { Parsetree.pexp_desc = Pexp_ident { txt = Lident var;
+                                                loc = var_loc; }; _ } ->
            make_exp_apply
              label_loc
              (make_ident ~name:(label ^ "'field") ())
@@ -233,13 +234,15 @@ and transl_pattern_desc loc desc =
   | Ppat_variant _ ->
     ppx_error_unsupported_pattern loc "variant"
   | Ppat_or (first, second) ->
-    let expr_first, vars_first = transl_pattern first in
+    let expr_first,  vars_first  = transl_pattern first  in
     let expr_second, vars_second = transl_pattern second in
     let same_variables =
       List.for_all2
         (fun var_first var_second ->
-           match var_first.Parsetree.ppat_desc, var_second.Parsetree.ppat_desc with
-           | Ppat_var { txt = name_first; _ }, Ppat_var { txt = name_second; _ } ->
+           match  var_first.Parsetree.ppat_desc,
+                 var_second.Parsetree.ppat_desc with
+           | Ppat_var { txt = name_first;  _ },
+             Ppat_var { txt = name_second; _ } ->
              name_first = name_second
            | _ -> false)
         vars_first
@@ -327,14 +330,17 @@ and transl_tuple patts =
 and transl_array = function
   | hd :: tl ->
     let expr_hd, vars_hd = transl_pattern hd in
-    let expr_tl, vars_tl = transl_array tl in
+    let expr_tl, vars_tl = transl_array   tl in
     make_exp_apply
       no_loc
-      (make_ident ~modname:Module.view "array_cons")
+      (make_ident ~modname:Module.view ~name:"array_cons" ())
       [expr_hd; expr_tl],
     vars_hd @ vars_tl
   | [] ->
-    make_exp_construct no_loc (make_ident ~modname:Module.view "array_nil") [],
+    make_exp_construct
+      no_loc
+      (make_ident ~modname:Module.view ~name:"array_nil" ())
+      [],
     []
 
 let trans_case_body vars guard body =
@@ -413,15 +419,12 @@ let mapper =
     match e.Parsetree.pexp_desc with
     | Pexp_extension ({ txt = "view"; loc; }, payload) ->
       begin match payload with
-      | PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_match (match_expr, match_cases);
-                                         _ },
-                                       _);
-                _; }] ->
+      | PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_match (match_expr,
+                                                                 match_cases);
+                                         _ }, _); _; }] ->
         transl_match loc (Some match_expr) match_cases
       | PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_function function_cases;
-                                         _ },
-                                       _);
-                _; }] ->
+                                         _ }, _); _; }] ->
         transl_match loc None function_cases
       | _ ->
         ppx_error loc "invalid 'view' payload"

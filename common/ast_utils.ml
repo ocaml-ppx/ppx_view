@@ -140,7 +140,10 @@ let rec qualify_core_type_desc ~types desc =
     Ptyp_variant (List.map
                     (function
                       | Rtag (label, attrs, empty, l) ->
-                        Rtag (label, attrs, empty, List.map (qualify_core_type ~types) l)
+                        Rtag (label,
+                              attrs,
+                              empty,
+                              List.map (qualify_core_type ~types) l)
                       | Rinherit ctyp ->
                         Rinherit (qualify_core_type ~types ctyp))
                     l,
@@ -149,7 +152,11 @@ let rec qualify_core_type_desc ~types desc =
   | Ptyp_poly (l, ctyp) ->
     Ptyp_poly (l, qualify_core_type ~types ctyp)
   | Ptyp_package (lid, l) ->
-    Ptyp_package (lid, List.map (fun (lid, ctyp) -> lid, qualify_core_type ~types ctyp) l)
+    Ptyp_package (lid,
+                  List.map
+                    (fun (lid, ctyp) ->
+                       lid, qualify_core_type ~types ctyp)
+                    l)
 
 and qualify_core_type ~types ctyp =
   { ctyp with ptyp_desc = qualify_core_type_desc ~types ctyp.ptyp_desc; }
