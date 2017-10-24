@@ -3,7 +3,8 @@
   (public_name ppx_view.ast)
   (libraries (compiler-libs.common
               ocaml-migrate-parsetree
-              viewlib))))
+              viewlib))
+  (preprocess (pps (ppx_view_rewriter)))))
 
 (rule
  ((targets (parseview.mli  parseview.ml ast_viewer.mli ast_viewer.ml))
