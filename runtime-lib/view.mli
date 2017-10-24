@@ -67,8 +67,12 @@ val tuple4
   -> ('m1, 'x, 'y) t
   -> ('m2, 'y, 'z) t
   -> ('m3, 'z, 'o) t
-   -> ('m0 * 'm1 * 'm2 * 'm3, 'i, 'o) t
+  -> ('m0 * 'm1 * 'm2 * 'm3, 'i, 'o) t
 
+
+val not
+   : ('m, 'i, 'i) t
+  -> ('m, 'i, 'i) t
 
 val unit : (unit, 'i, 'i) t
 
@@ -111,4 +115,3 @@ val larray : 'a array -> 'a larray
 val larray_cons : ('m, 'i, 'x) t -> ('m larray, 'x, 'o) t -> ('m larray, 'i, 'o) t
 
 val larray_nil : ('m larray, 'i, 'i) t
-
