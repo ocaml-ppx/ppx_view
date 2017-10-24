@@ -8,19 +8,36 @@ val ok : 'a -> 'a match_result
 
 val error : 'b -> 'a match_result
 
-val (>>=) : 'a match_result -> ('a -> 'b match_result) -> 'b match_result
+val (>>=)
+   : 'a match_result
+  -> ('a -> 'b match_result)
+  -> 'b match_result
 
-val (>>|) : 'a match_result -> ('a -> 'b) -> 'b match_result
+val (>>|)
+   : 'a match_result
+  -> ('a -> 'b)
+  -> 'b match_result
 
-val (>>+) : ('a -> 'b match_result) -> ('b -> 'c match_result) -> 'a -> 'c match_result
+val (>>+)
+   : ('a -> 'b match_result)
+  -> ('b -> 'c match_result)
+  -> 'a
+  -> 'c match_result
 
-val (>>++) : 'a match_result -> ('a -> 'b -> 'c match_result) -> 'b -> 'c match_result
+val (>>++)
+   : 'a match_result
+  -> ('a -> 'b -> 'c match_result)
+  -> 'b
+  -> 'c match_result
 
-type ('input, 'output) variables_fun = 'input variables -> 'output variables match_result
+type ('input, 'output) variables_fun =
+  'input variables -> 'output variables match_result
 
-type ('matched, 'produced) matcher = 'matched -> 'produced match_result
+type ('matched, 'produced) matcher =
+  'matched -> 'produced match_result
 
-type ('matched, 'input, 'output) t = 'matched -> ('input, 'output) variables_fun
+type ('matched, 'input, 'output) t =
+  'matched -> ('input, 'output) variables_fun
 
 
 val guard_failed : unit -> 'a
@@ -74,9 +91,9 @@ val unit : (unit, 'i, 'i) t
 
 val bool : bool -> (bool, 'i, 'i) t
 
-val true_ : (bool, 'i, 'i) t
-
 val false_ : (bool, 'i, 'i) t
+
+val true_ : (bool, 'i, 'i) t
 
 val char : char -> (char, 'i, 'i) t
 
@@ -111,4 +128,3 @@ val larray : 'a array -> 'a larray
 val larray_cons : ('m, 'i, 'x) t -> ('m larray, 'x, 'o) t -> ('m larray, 'i, 'o) t
 
 val larray_nil : ('m larray, 'i, 'i) t
-

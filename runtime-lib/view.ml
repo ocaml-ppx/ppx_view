@@ -26,11 +26,14 @@ let (>>+) a b vars =
 let (>>++) x f vars =
   x >>= fun x -> f x vars
 
-type ('input, 'output) variables_fun = 'input variables -> 'output variables match_result
+type ('input, 'output) variables_fun =
+  'input variables -> 'output variables match_result
 
-type ('matched, 'produced) matcher = 'matched -> 'produced match_result
+type ('matched, 'produced) matcher =
+  'matched -> 'produced match_result
 
-type ('matched, 'input, 'output) t = 'matched -> ('input, 'output) variables_fun
+type ('matched, 'input, 'output) t =
+  'matched -> ('input, 'output) variables_fun
 
 
 exception Guard_failed
@@ -92,9 +95,9 @@ let unit value = constant () value
 
 let bool = constant
 
-let true_ value = constant true value
-
 let false_ value = constant false value
+
+let true_ value = constant true value
 
 let char = constant
 
@@ -128,9 +131,8 @@ let none value =
 
 let cons view_hd view_tl value =
   match value with
-  | [] -> error
-  | hd :: tl ->
-    view_hd hd >>+ view_tl tl
+  | []       -> error
+  | hd :: tl -> view_hd hd >>+ view_tl tl
 
 let nil value = constant [] value
 
@@ -149,9 +151,8 @@ let larray arr =
 
 let larray_cons view_hd view_tl value =
   match value with
-  | Array_nil -> error
-  | Array_cons (hd, tl) ->
-    view_hd hd >>+ view_tl tl
+  | Array_nil           -> error
+  | Array_cons (hd, tl) -> view_hd hd >>+ view_tl tl
 
 let larray_nil value =
   constant Array_nil value
