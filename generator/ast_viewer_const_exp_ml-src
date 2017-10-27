@@ -5,9 +5,14 @@ module ConstExp = struct
     | Parsetree.Pexp_constant (Parsetree.Pconst_char x) -> view x
     | _ -> View.error
 
-  let string view value =
+  let string_delim view value =
     match value.Parsetree.pexp_desc with
     | Parsetree.Pexp_constant (Parsetree.Pconst_string (x, y)) -> view (x, y)
+    | _ -> View.error
+
+  let string view value =
+    match value.Parsetree.pexp_desc with
+    | Parsetree.Pexp_constant (Parsetree.Pconst_string (x, _)) -> view x
     | _ -> View.error
 
   let integer view value =

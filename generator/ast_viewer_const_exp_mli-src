@@ -4,8 +4,12 @@ module ConstExp : sig
      : (char, 'i, 'o) View.t
     -> (Parsetree.expression, 'i, 'o) View.t
 
-  val string
+  val string_delim
      : (string * string option, 'i, 'o) View.t
+    -> (Parsetree.expression, 'i, 'o) View.t
+
+  val string
+     : (string, 'i, 'o) View.t
     -> (Parsetree.expression, 'i, 'o) View.t
 
   val integer

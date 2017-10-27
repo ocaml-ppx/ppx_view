@@ -5,9 +5,14 @@ module Const = struct
     | Parsetree.Pconst_char x -> view x
     | _ -> View.error
 
-  let string view value =
+  let string_delim view value =
     match value with
     | Parsetree.Pconst_string (x, y) -> view (x, y)
+    | _ -> View.error
+
+  let string view value =
+    match value with
+    | Parsetree.Pconst_string (x, _) -> view x
     | _ -> View.error
 
   let integer view value =
