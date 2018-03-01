@@ -18,7 +18,7 @@ module StringSet = Set.Make (String)
 
 let make_view a b c =
   Ast_helper.Typ.constr
-    (make_ident_loc no_loc ~modname:"View" "t")
+    (make_ident_loc no_loc ~modname:"View" ~name:"t" ())
     [a; b; c]
 
 let parseview_signature = Generator_list.make_signature ()
@@ -52,7 +52,7 @@ let add_ast_viewer_element, copy_ast_viewer_elements =
                 Ast_helper.Str.value
                   Nonrecursive
                   [Ast_helper.Vb.mk
-                     (make_pat_var no_loc function_name)
+                     (make_pat_var no_loc ~name:function_name)
                      function_def])
              module_elements
          in
@@ -109,11 +109,11 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
                 ~module_name
                 ~type_name:res_type_name
                 ~type_params:[])
-             (make_typ_var a)
-             (make_typ_var b)
+             (make_typ_var ~name:a)
+             (make_typ_var ~name:b)
          in
          let make_def param_names match_case =
-           let matched_value = make_exp_ident no_loc "value" in
+           let matched_value = make_exp_ident no_loc ~name:"value" () in
            let matched_value =
              try
                let fn =
@@ -123,7 +123,11 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
                in
                Ast_helper.Exp.field
                  matched_value
-                 (make_ident_loc no_loc ~modname:module_name fn.field_name)
+                 (make_ident_loc
+                    no_loc
+                    ~modname:module_name
+                    ~name:fn.field_name
+                    ())
              with Not_found ->
                matched_value
            in
@@ -133,9 +137,9 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
                [match_case;
                 Ast_helper.Exp.case
                   (Ast_helper.Pat.any ())
-                  ( make_exp_ident no_loc ~modname:"View" "error")]
+                  ( make_exp_ident no_loc ~modname:"View" ~name:"error" ())]
            in
-           make_exp_funs false param_names body
+           make_exp_funs ~labelled:false ~param_names body
          in
          let val_name = uncapitalize_str pcd_name in
          let val_type, val_def, val_arrow_type, val_arrow_def =
@@ -147,59 +151,62 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
                (Ast_helper.Exp.case
                   (make_pat_construct
                      no_loc
-                     (make_ident ~modname:module_name pcd_name.txt)
+                     (make_ident ~modname:module_name ~name:pcd_name.txt ())
                      [])
-                  (make_exp_ident no_loc ~modname:"View" "ok")),
+                  (make_exp_ident no_loc ~modname:"View" ~name:"ok" ())),
              make_typ_arrow
                (make_view
                   (make_typ_constr
                      ~module_name:""
                      ~type_name:"unit"
                      ~type_params:[])
-                  (make_typ_var "a")
-                  (make_typ_var "a"))
+                  (make_typ_var ~name:"a")
+                  (make_typ_var ~name:"a"))
                (make_res_type "a" "a"),
              Ast_helper.Exp.fun_
                Nolabel
                None
                (Ast_helper.Pat.constraint_
-                  (make_pat_var no_loc "view")
+                  (make_pat_var no_loc ~name:"view")
                   (make_view
                      (make_typ_constr
                         ~module_name:""
                         ~type_name:"unit"
                         ~type_params:[])
-                     (make_typ_var "a")
-                     (make_typ_var "a")))
+                     (make_typ_var ~name:"a")
+                     (make_typ_var ~name:"a")))
                (make_def
                   ["value"]
                   (Ast_helper.Exp.case
                      (make_pat_construct
                         no_loc
-                        (make_ident ~modname:module_name pcd_name.txt)
+                        (make_ident ~modname:module_name ~name:pcd_name.txt ())
                         [])
                      (make_exp_apply
                         no_loc
-                        (make_ident "view")
-                        [make_exp_construct no_loc (make_ident "()") []])))
+                        (make_ident ~name:"view" ())
+                        [make_exp_construct
+                           no_loc
+                           (make_ident ~name:"()" ())
+                           []])))
            | Pcstr_tuple args ->
              let patt, expr =
                match args with
                | [] ->
                  assert false
                | [_] ->
-                 make_pat_var no_loc "arg",
-                 make_exp_ident no_loc "arg"
+                 make_pat_var no_loc ~name:"arg",
+                 make_exp_ident no_loc ~name:"arg" ()
                | _ ->
                  Ast_helper.Pat.tuple
                    (List.mapi
                       (fun idx _ ->
-                         make_pat_var no_loc (Printf.sprintf "arg%d" idx))
+                         make_pat_var no_loc ~name:(Printf.sprintf "arg%d" idx))
                       args),
                  Ast_helper.Exp.tuple
                    (List.mapi
                       (fun idx _ ->
-                         make_exp_ident no_loc (Printf.sprintf "arg%d" idx))
+                         make_exp_ident no_loc ~name:(Printf.sprintf "arg%d" idx) ())
                       args)
              in
              let typ =
@@ -209,8 +216,8 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
                      | [] -> assert false
                      | [arg] -> arg
                      | _ -> make_typ_tuple args)
-                    (make_typ_var "a")
-                    (make_typ_var "b"))
+                    (make_typ_var ~name:"a")
+                    (make_typ_var ~name:"b"))
                  (make_res_type "a" "b")
              in
              let def =
@@ -218,11 +225,11 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
                  ["view"; "value"]
                (Ast_helper.Exp.case
                   (Ast_helper.Pat.construct
-                     (make_ident_loc no_loc ~modname:module_name pcd_name.txt)
+                     (make_ident_loc no_loc ~modname:module_name ~name:pcd_name.txt ())
                      (Some patt))
                   (make_exp_apply
                      no_loc
-                     (make_ident "view")
+                     (make_ident ~name:"view" ())
                      [expr]))
              in
              typ, def, typ, def
@@ -262,7 +269,7 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
            (Ast_helper.Str.value
               Nonrecursive
               [Ast_helper.Vb.mk
-                 (make_pat_var no_loc val_name.txt)
+                 (make_pat_var no_loc ~name:val_name.txt)
                  val_def]))
       constructor_decls
   | Ptype_record label_decls ->
@@ -288,33 +295,33 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
               make_typ_arrow
                 (make_view
                    pld_type
-                   (make_typ_var "i")
-                   (make_typ_var "o"))
+                   (make_typ_var ~name:"i")
+                   (make_typ_var ~name:"o"))
                 (make_view
                    record_type
-                   (make_typ_var "i")
-                   (make_typ_var "o"))
+                   (make_typ_var ~name:"i")
+                   (make_typ_var ~name:"o"))
             in
             let value =
               Ast_helper.Exp.constraint_
-                (make_exp_ident no_loc "value")
+                (make_exp_ident no_loc ~name:"value" ())
                 record_type
             in
             let field_access =
               Ast_helper.Exp.field
                 value
-                (make_ident_loc no_loc txt)
+                (make_ident_loc no_loc ~name:txt ())
             in
             let body =
               make_exp_apply
                 no_loc
-                (make_ident "view")
+                (make_ident ~name:"view" ())
                 [field_access]
             in
             let val_def =
                 make_exp_funs
-                  false
-                  ["view"; "value"]
+                  ~labelled:false
+                  ~param_names:["view"; "value"]
                   body
             in
             parseview_signature.Generator_list.add
@@ -326,7 +333,7 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
               (Ast_helper.Str.value
                  Nonrecursive
                  [Ast_helper.Vb.mk
-                    (make_pat_var no_loc val_name)
+                    (make_pat_var no_loc ~name:val_name)
                     val_def]))
         label_decls
     end;
@@ -355,54 +362,54 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
                     ~module_name:field_module
                     ~type_name:field_name
                     ~type_params:[])
-                 (make_typ_var "x0")
-                 (make_typ_var "x1"))
+                 (make_typ_var ~name:"x0")
+                 (make_typ_var ~name:"x1"))
               (make_typ_arrow
                  (make_view
                     (make_typ_constr
                        ~module_name
                        ~type_name:shortcut.type_name
                        ~type_params:[])
-                    (make_typ_var "x1")
-                    (make_typ_var "x2"))
+                    (make_typ_var ~name:"x1")
+                    (make_typ_var ~name:"x2"))
                  (make_view
                     (make_typ_constr
                        ~module_name
                        ~type_name:shortcut.type_name
                        ~type_params:[])
-                    (make_typ_var "x0")
-                    (make_typ_var "x2")))
+                    (make_typ_var ~name:"x0")
+                    (make_typ_var ~name:"x2")))
           in
           let value =
             if pseudo then
-              make_exp_ident no_loc "value"
+              make_exp_ident no_loc ~name:"value" ()
             else
               Ast_helper.Exp.field
-                (make_exp_ident no_loc "value")
-                (make_ident_loc no_loc ~modname:module_name field_label)
+                (make_exp_ident no_loc ~name:"value" ())
+                (make_ident_loc no_loc ~modname:module_name ~name:field_label ())
           in
           let matched_value =
             make_exp_apply
               no_loc
-              (make_ident "field_view")
+              (make_ident ~name:"field_view" ())
               [value]
           in
           let call =
             make_exp_apply
               no_loc
-              (make_ident "view")
-              [make_exp_ident no_loc "value"]
+              (make_ident ~name:"view" ())
+              [make_exp_ident no_loc ~name:"value" ()]
           in
           let body =
             make_exp_apply
               no_loc
-              (make_ident ~modname:"View" ">>+")
+              (make_ident ~modname:"View" ~name:">>+" ())
               [matched_value; call]
           in
           let val_def =
             make_exp_funs
-              false
-              ["field_view"; "view"; "value"]
+              ~labelled:false
+              ~param_names:["field_view"; "view"; "value"]
               body
           in
           parseview_signature.Generator_list.add
@@ -414,7 +421,7 @@ let process_type_decl ~module_name ~types ~type_decl ~shortcuts ~prefixes =
             (Ast_helper.Str.value
                Nonrecursive
                [Ast_helper.Vb.mk
-                  (make_pat_var no_loc val_name)
+                  (make_pat_var no_loc ~name:val_name)
                   val_def])
         end
       in

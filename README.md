@@ -1,6 +1,7 @@
 A ppx rewriter that provides pattern matching on abstract types by
 transforming patterns into views/expressions.
 
+
 Syntax
 ------
 
@@ -27,16 +28,17 @@ Technically, the above expression is rewritten into:
 ```ocaml
 Viewlib.View.match_ __POS__
     [Viewlib.View.case (constr Viewlib.View.__)
-       (fun (Viewlib.View.Var_cons
-          (var,Viewlib.View.Var_nil ))  -> var)] expr
+       (fun (Viewlib.View.Var_snoc (Viewlib.View.Var_nil, var)) -> var)]
+    expr
 ```
 
 where `__` is used to capture the variable.
 
+
 Mapping
 -------
 `ppx_view` applies the following mapping:
-     
+
 - a literal constant `c` of type `typ` is mapped to `View.typ c`;
 - an interval pattern `c1..c2` is mapped to `View.interval e1 e2`
   where `ci` is mapped to `ei`;
@@ -55,7 +57,7 @@ Mapping
   - `()` is mapped to `View.unit`;
   - `true` is mapped to `View.true_`;
   - `false` is mapped to `View.false_`.
-  
+
 Note: the following patterns are currently not supported:
 
 - polymorphic variants;
@@ -119,3 +121,29 @@ let twice_mapper =
   in
   { super with expr; pat; }
 ```
+
+
+Not patterns
+------------
+Following the proposal in [MPR#7628](https://caml.inria.fr/mantis/view.php?id=7628),
+*not* pattern are implemented through the `Not` constructor, that is
+rewritten to `View.not`. *Not* patterns allow to write patterns that
+are matched if a subpattern is not matched as in:
+
+```ocaml
+match%view expr with
+| Pexp_constant (Not (Pconst_integer _ | Pconst_float _)) ->
+  (* expr is not a number *)
+| Pexp_constant (Pconst_integer _) ->
+  (* expr is an integer *)
+| Pexp_constant (Pconst_float _) ->
+  (* expr is a float *)
+```
+
+*Not* patterns cannot contain variables.
+
+
+Limitations
+-----------
+The major limitations of view patterns are the lack of checks for
+non-redundancy and exhaustivity.

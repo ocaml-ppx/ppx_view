@@ -28,10 +28,9 @@ let ppx_error_unsupported_pattern loc kind =
 let rec extract_view_attribute_fields = function
   | ({ Location.txt = "view"; loc; }, payload) :: _ ->
     begin match payload with
-    | Parsetree.PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_record (fields, None);
-                                                 _ },
-                                               _);
-                        _ }] ->
+    | Parsetree.PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_record (fields,
+                                                                          None);
+                                                 _ }, _); _ }] ->
       Some fields
     | _ ->
       ppx_error loc "invalid 'view' payload"
@@ -50,8 +49,8 @@ let generate_tuple_function n =
   let component idx =
     make_exp_apply
       no_loc
-      (make_ident (Printf.sprintf "view%d" idx))
-      [make_exp_ident no_loc (Printf.sprintf "value%d" idx)]
+      (make_ident ~name:(Printf.sprintf "view%d" idx) ())
+      [make_exp_ident no_loc ~name:(Printf.sprintf "value%d" idx) ()]
   in
   (* generates `viewIDX valueIDX >>= ... >>= viewN valueN` *)
   let rec body idx =
@@ -60,7 +59,7 @@ let generate_tuple_function n =
     else begin
       make_exp_apply
         loc
-        (make_ident ~modname:Module.view ">>+")
+        (make_ident ~modname:Module.view ~name:">>+" ())
         [component idx;
          body (succ idx)]
     end
@@ -70,7 +69,7 @@ let generate_tuple_function n =
     if idx <= 0 then
       acc
     else
-      let var = make_pat_var no_loc (Printf.sprintf "value%d" idx) in
+      let var = make_pat_var no_loc ~name:(Printf.sprintf "value%d" idx) in
       values (var :: acc) (pred idx)
   in
   (* `fun (value1, ..., valueN) -> BODY` *)
@@ -88,8 +87,8 @@ let generate_tuple_function n =
       res
     else begin
       make_exp_fun
-        false
-        (Printf.sprintf "view%d" idx)
+        ~labelled:false
+        ~param_name:(Printf.sprintf "view%d" idx)
         (fun_ (succ idx))
     end
   in
@@ -99,14 +98,14 @@ let generate_tuple_function n =
 (* Mapping of predefined constructors *)
 
 let predefined_idents = [
-  "Some",  make_ident ~modname:Module.view "some";
-  "None",  make_ident ~modname:Module.view "none";
-  "::",    make_ident ~modname:Module.view "cons";
-  "[]",    make_ident ~modname:Module.view "nil";
-  "()",    make_ident ~modname:Module.view "unit";
-  "true",  make_ident ~modname:Module.view "true_";
-  "false", make_ident ~modname:Module.view "false_";
-  "Not",   make_ident ~modname:Module.view "not";
+  "Some",  make_ident ~modname:Module.view ~name:"some"   ();
+  "None",  make_ident ~modname:Module.view ~name:"none"   ();
+  "::",    make_ident ~modname:Module.view ~name:"cons"   ();
+  "[]",    make_ident ~modname:Module.view ~name:"nil"    ();
+  "()",    make_ident ~modname:Module.view ~name:"unit"   ();
+  "true",  make_ident ~modname:Module.view ~name:"true_"  ();
+  "false", make_ident ~modname:Module.view ~name:"false_" ();
+  "Not",   make_ident ~modname:Module.view ~name:"not"    ();
 ]
 
 
@@ -124,7 +123,8 @@ let transl_constructor : Longident.t -> Longident.t = function
   | (Lapply _) as li ->
     li
 
-let transl_ident_loc : Longident.t Asttypes.loc -> Longident.t Asttypes.loc = function
+let transl_ident_loc : Longident.t Asttypes.loc -> Longident.t Asttypes.loc =
+  function
   | { txt; _ } as li ->
     { li with txt = transl_constructor txt; }
 
@@ -133,7 +133,7 @@ let transl_constant : Location.t -> Parsetree.constant -> Parsetree.expression =
     let make_constant name value =
       make_exp_apply
         loc
-        (make_ident ~modname:Module.view name)
+        (make_ident ~modname:Module.view ~name ())
         [Ast_helper.Exp.constant ~loc value]
     in
     match const with
@@ -162,13 +162,14 @@ let rec transl_pattern patt =
       (fun field (acc_expr, acc_vars) ->
          match field with
          | { Location.txt = Longident.Lident label; loc = label_loc; },
-           { Parsetree.pexp_desc = Pexp_ident { txt = Lident var; loc = var_loc; }; _ } ->
+           { Parsetree.pexp_desc = Pexp_ident { txt = Lident var;
+                                                loc = var_loc; }; _ } ->
            make_exp_apply
              label_loc
-             (make_ident (label ^ "'field"))
-             [make_exp_ident var_loc ~modname:Module.view "__";
+             (make_ident ~name:(label ^ "'field") ())
+             [make_exp_ident var_loc ~modname:Module.view ~name:"__" ();
               acc_expr],
-           (make_pat_var var_loc var) :: acc_vars
+           (make_pat_var var_loc ~name:var) :: acc_vars
          | { loc; _ }, _ ->
            ppx_error loc "invalid 'view' payload")
       fields
@@ -179,26 +180,26 @@ let rec transl_pattern patt =
 and transl_pattern_desc loc desc =
   match desc with
   | Ppat_any ->
-    make_exp_ident loc ~modname:Module.view "drop",
+    make_exp_ident loc ~modname:Module.view ~name:"drop" (),
     []
   | Ppat_var _ ->
-    make_exp_ident loc ~modname:Module.view "__",
+    make_exp_ident loc ~modname:Module.view ~name:"__" (),
     [Ast_helper.Pat.mk ~loc desc]
   | Ppat_alias (patt, alias) ->
     let expr, vars = transl_pattern patt in
     make_exp_apply
       no_loc
-      (make_ident ~modname:Module.view "sequence")
-      [make_exp_ident alias.loc ~modname:Module.view "__";
+      (make_ident ~modname:Module.view ~name:"sequence" ())
+      [make_exp_ident alias.loc ~modname:Module.view ~name:"__" ();
        expr],
-    (make_pat_var alias.loc alias.txt) :: vars
+    (make_pat_var alias.loc ~name:alias.txt) :: vars
   | Ppat_constant c ->
     transl_constant loc c,
     []
   | Ppat_interval (lower, upper) ->
     make_exp_apply
       loc
-      (make_ident ~modname:Module.view "interval")
+      (make_ident ~modname:Module.view ~name:"interval" ())
       [transl_constant loc lower;
        transl_constant loc upper],
     []
@@ -234,13 +235,15 @@ and transl_pattern_desc loc desc =
   | Ppat_variant _ ->
     ppx_error_unsupported_pattern loc "variant"
   | Ppat_or (first, second) ->
-    let expr_first, vars_first = transl_pattern first in
+    let expr_first,  vars_first  = transl_pattern first  in
     let expr_second, vars_second = transl_pattern second in
     let same_variables =
       List.for_all2
         (fun var_first var_second ->
-           match var_first.Parsetree.ppat_desc, var_second.Parsetree.ppat_desc with
-           | Ppat_var { txt = name_first; _ }, Ppat_var { txt = name_second; _ } ->
+           match  var_first.Parsetree.ppat_desc,
+                 var_second.Parsetree.ppat_desc with
+           | Ppat_var { txt = name_first;  _ },
+             Ppat_var { txt = name_second; _ } ->
              name_first = name_second
            | _ -> false)
         vars_first
@@ -249,7 +252,7 @@ and transl_pattern_desc loc desc =
     if same_variables then begin
       make_exp_apply
         no_loc
-        (make_ident ~modname:Module.view "choice")
+        (make_ident ~modname:Module.view ~name:"choice" ())
         [expr_first; expr_second],
       vars_first
     end else
@@ -261,7 +264,7 @@ and transl_pattern_desc loc desc =
       | hd :: tl ->
         make_exp_apply
           no_loc
-          (make_ident ~modname:Module.view "sequence")
+          (make_ident ~modname:Module.view ~name:"sequence" ())
           [hd; sequence tl]
     in
     let exprs_vars =
@@ -272,7 +275,7 @@ and transl_pattern_desc loc desc =
              let expr, vars = transl_pattern patt in
              make_exp_apply
                loc
-               (make_ident (id ^ "'match"))
+               (make_ident ~name:(id ^ "'match") ())
                [expr],
              vars
            | { loc; _ } ->
@@ -313,7 +316,7 @@ and transl_tuple patts =
   | (2 | 3 | 4) as len ->
     make_exp_apply
       no_loc
-      (make_ident ~modname:Module.view (Printf.sprintf "tuple%d" len))
+      (make_ident ~modname:Module.view ~name:(Printf.sprintf "tuple%d" len) ())
       exprs,
     vars
   | len ->
@@ -328,14 +331,17 @@ and transl_tuple patts =
 and transl_array = function
   | hd :: tl ->
     let expr_hd, vars_hd = transl_pattern hd in
-    let expr_tl, vars_tl = transl_array tl in
+    let expr_tl, vars_tl = transl_array   tl in
     make_exp_apply
       no_loc
-      (make_ident ~modname:Module.view "array_cons")
+      (make_ident ~modname:Module.view ~name:"array_cons" ())
       [expr_hd; expr_tl],
     vars_hd @ vars_tl
   | [] ->
-    make_exp_construct no_loc (make_ident ~modname:Module.view "array_nil") [],
+    make_exp_construct
+      no_loc
+      (make_ident ~modname:Module.view ~name:"array_nil" ())
+      [],
     []
 
 let trans_case_body vars guard body =
@@ -344,11 +350,11 @@ let trans_case_body vars guard body =
       (fun acc var ->
          make_pat_construct
            no_loc
-           (make_ident ~modname:Module.view "Var_snoc")
+           (make_ident ~modname:Module.view ~name:"Var_snoc" ())
            [acc; var])
       (make_pat_construct
         no_loc
-        (make_ident ~modname:Module.view "Var_nil")
+        (make_ident ~modname:Module.view ~name:"Var_nil" ())
         [])
       vars
   in
@@ -364,8 +370,8 @@ let trans_case_body vars guard body =
          (Ast_helper.Pat.any ~loc:no_loc ())
          (make_exp_apply
             no_loc
-            (make_ident ~modname:Module.view "guard_failed")
-            [make_exp_construct no_loc (make_ident "()") []])]
+            (make_ident ~modname:Module.view ~name:"guard_failed" ())
+            [make_exp_construct no_loc (make_ident ~name:"()" ()) []])]
   | None ->
     Ast_helper.Exp.fun_
       ~loc:no_loc
@@ -382,30 +388,24 @@ let transl_cases cases =
         let body = trans_case_body vars pc_guard pc_rhs in
         make_exp_apply
           no_loc
-          (make_ident ~modname:Module.view "case")
+          (make_ident ~modname:Module.view ~name:"case" ())
           [patt; body])
     cases
 
 let transl_match loc match_expr match_cases =
   let start = loc.Location.loc_start in
-  let string x =
-    Ast_helper.Exp.constant
-      (Ast_helper.Const.string x)
-  in
-  let int x =
-    Ast_helper.Exp.constant
-      (Ast_helper.Const.int x)
-  in
+  let string x = Ast_helper.(Exp.constant (Const.string x)) in
+  let int    x = Ast_helper.(Exp.constant (Const.int    x)) in
   let pos =
     Ast_helper.Exp.tuple
       [string start.pos_fname;
-       int start.pos_lnum;
-       int (start.pos_cnum - start.pos_bol)]
+       int    start.pos_lnum;
+       int   (start.pos_cnum - start.pos_bol)]
   in
   let cases = make_exp_list (transl_cases match_cases) in
   make_exp_apply
     no_loc
-    (make_ident ~modname:Module.view "match_")
+    (make_ident ~modname:Module.view ~name:"match_" ())
     (match match_expr with
      | Some expr -> [pos; cases; expr]
      | None      -> [pos; cases])
@@ -420,15 +420,12 @@ let mapper =
     match e.Parsetree.pexp_desc with
     | Pexp_extension ({ txt = "view"; loc; }, payload) ->
       begin match payload with
-      | PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_match (match_expr, match_cases);
-                                         _ },
-                                       _);
-                _; }] ->
+      | PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_match (match_expr,
+                                                                 match_cases);
+                                         _ }, _); _; }] ->
         transl_match loc (Some match_expr) match_cases
       | PStr [{ pstr_desc = Pstr_eval ({ pexp_desc = Pexp_function function_cases;
-                                         _ },
-                                       _);
-                _; }] ->
+                                         _ }, _); _; }] ->
         transl_match loc None function_cases
       | _ ->
         ppx_error loc "invalid 'view' payload"

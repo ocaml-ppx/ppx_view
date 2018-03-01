@@ -1,5 +1,5 @@
-module Fixed_ocaml : module type of Migrate_parsetree.OCaml_404
-module Fixed_ast : module type of Migrate_parsetree.Ast_404
+module Fixed_ocaml : module type of Migrate_parsetree.OCaml_405
+module Fixed_ast : module type of Migrate_parsetree.Ast_405
 open Fixed_ast
 
 
@@ -16,13 +16,15 @@ val uncapitalize_str
 
 val make_ident
    : ?modname:string
-  -> string
+  -> name:string
+  -> unit
   -> Longident.t
 
 val make_ident_loc
    : Location.t
   -> ?modname:string
-  -> string
+  -> name:string
+  -> unit
   -> Longident.t Location.loc
 
 
@@ -41,18 +43,19 @@ val make_exp_construct
 val make_exp_ident
    : Location.t
   -> ?modname:string
-  -> string
+  -> name:string
+  -> unit
   -> Parsetree.expression
 
 val make_exp_fun
-   : bool
-  -> string
+   : labelled:bool
+  -> param_name:string
   -> Parsetree.expression
   -> Parsetree.expression
 
 val make_exp_funs
-   : bool
-  -> string list
+   : labelled:bool
+  -> param_names:string list
   -> Parsetree.expression
   -> Parsetree.expression
 
@@ -69,7 +72,7 @@ val make_pat_construct
 
 val make_pat_var
    : Location.t
-  -> string
+  -> name:string
   -> Parsetree.pattern
 
 
@@ -93,7 +96,7 @@ val make_typ_tuple
   -> Parsetree.core_type
 
 val make_typ_var
-   : string
+   : name:string
   -> Parsetree.core_type
 
 val qualify_core_type

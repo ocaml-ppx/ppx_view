@@ -1,4 +1,4 @@
-let keywords = [
+let ocaml_keywords = [
   "and"; "as"; "assert"; "asr";
   "begin";
   "class"; "constraint";
@@ -18,33 +18,33 @@ let keywords = [
   "when"; "while"; "with";
 ]
 
-let safe_ident s =
-  if List.mem s keywords then
-    s ^ "_"
+let safe_ident str =
+  if List.mem str ocaml_keywords then
+    str ^ "_"
   else
-    s
+    str
 
-let safe_uncapitalize s =
-  safe_ident (String.uncapitalize_ascii s)
+let safe_uncapitalize str =
+  safe_ident (String.uncapitalize_ascii str)
 
-let starts_with ~prefix s =
+let starts_with ~prefix str =
   let len_prefix = String.length prefix in
-  let len_s = String.length s in
-  if len_s >= len_prefix then begin
+  let len_str    = String.length str in
+  if len_str >= len_prefix then begin
     let idx = ref 0 in
-    while (!idx < len_prefix) && (prefix.[!idx] = s.[!idx]) do
+    while (!idx < len_prefix) && (prefix.[!idx] = str.[!idx]) do
       incr idx
     done;
     !idx = len_prefix
   end else
     false
 
-let ends_with ~suffix s =
+let ends_with ~suffix str =
   let len_suffix = String.length suffix in
-  let len_s = String.length s in
-  if len_s >= len_suffix then begin
+  let len_str    = String.length str in
+  if len_str >= len_suffix then begin
     let idx = ref (pred len_suffix) in
-    while (!idx >= 0) && (suffix.[!idx] = s.[!idx + (len_s - len_suffix)]) do
+    while (!idx >= 0) && (suffix.[!idx] = str.[!idx + (len_str - len_suffix)]) do
       decr idx
     done;
     !idx < 0
