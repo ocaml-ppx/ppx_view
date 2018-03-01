@@ -10,8 +10,8 @@
  ((targets (parseview.mli  parseview.ml ast_viewer.mli ast_viewer.ml))
   (deps    (../generator/generator.exe
             (glob_files ../generator/ast_viewer_const_ml{,i}-src)
-            (glob_files ../ast404/stdlib/*.mli)
-            (glob_files ../ast404/parsing/*.mli)))
-  (action  (run ${<} -ocaml-where-path ../ast404
+            (glob_files ../ast405/stdlib/*.mli)
+            (glob_files ../ast405/parsing/*.mli)))
+  (action  (run ${<} -ocaml-where-path ../ast405
                      -data-path ../generator
                      -dest-path .))))
