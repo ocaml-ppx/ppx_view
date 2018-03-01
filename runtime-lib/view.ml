@@ -93,12 +93,6 @@ let not view value vars =
   | Error -> Ok vars
 
 
-let not view value vars =
-  match view value vars with
-  | Ok _  -> Error
-  | Error -> Ok vars
-
-
 let constant const value =
   if value = const then ok else error
 
