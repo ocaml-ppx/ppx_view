@@ -9,13 +9,13 @@ let twice_mapper =
   let super = M.default_mapper in
   let expr self e =
     match%view super.expr self e with
-    | V.Exp.Constant (V.Const.String (str, _)) ->
+    | V.Exp.Constant (V.Const.String str) ->
       H.Exp.constant (H.Const.string (str ^ str))
     | other ->
       other
   and pat self p =
     match%view super.pat self p with
-    | V.Pat.Constant (V.Const.String (str, _)) ->
+    | V.Pat.Constant (V.Const.String str) ->
       H.Pat.constant (H.Const.string (str ^ str))
     | other ->
       other

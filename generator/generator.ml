@@ -589,7 +589,9 @@ let () =
      make_open Longident.(Lident "Viewlib")];
   (* add manually-defined elememts to Ast_viewer *)
   ast_viewer_signature.Generator_list.add_from_file "ast_viewer_const_mli-src";
+  ast_viewer_signature.Generator_list.add_from_file "ast_viewer_const_exp_mli-src";
   ast_viewer_structure.Generator_list.add_from_file "ast_viewer_const_ml-src";
+  ast_viewer_structure.Generator_list.add_from_file "ast_viewer_const_exp_ml-src";
   (* process file from the OCaml distribution *)
   let _ =
     List.fold_left
