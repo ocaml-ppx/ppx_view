@@ -4,6 +4,7 @@ open Viewlib
 module Attribute = struct
 
   module StringLocationSet = Set.Make (struct
+      [@@@ocaml.warning "-3"]
       type t = string Location.loc
       let compare = Pervasives.compare
     end)
@@ -282,7 +283,7 @@ let invalid_payload loc _ =
     else
       "invalid payload"
   in
-  raise (Location.(Error (error ~loc msg)))
+  raise (Location.Error (Location.error ~loc msg))
 
 module Payload = struct
   module Match = Make_payload (struct let error _loc = View.error end)
