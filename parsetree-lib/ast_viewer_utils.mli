@@ -127,7 +127,7 @@ val register_ppx_driver
    : name:string
   -> ?reset_args:(unit -> unit)
   -> ?args:(Arg.key * Arg.spec * Arg.doc) list
-  -> Migrate_parsetree_versions.OCaml_404.types Migrate_parsetree_driver.rewriter
+  -> Migrate_parsetree.Versions.OCaml_404.types Migrate_parsetree.Driver.rewriter
   -> unit
 
 type cases = Parsetree.case list (* this synonym does not exist before 4.06 *)
@@ -137,12 +137,12 @@ type 'a mapper = 'a -> 'a
 class virtual default_mapper : object
 
     val virtual name        : string
-    val mutable config_opt  : Migrate_parsetree_driver.config  option
-    val mutable cookies_opt : Migrate_parsetree_driver.cookies option
+    val mutable config_opt  : Migrate_parsetree.Driver.config  option
+    val mutable cookies_opt : Migrate_parsetree.Driver.cookies option
     val mutable mapper      : Ast_mapper.mapper
 
-    method config  : Migrate_parsetree_driver.config
-    method cookies : Migrate_parsetree_driver.cookies
+    method config  : Migrate_parsetree.Driver.config
+    method cookies : Migrate_parsetree.Driver.cookies
 
     method attribute               : Parsetree.attribute               mapper
     method attributes              : Parsetree.attributes              mapper
