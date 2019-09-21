@@ -1,5 +1,10 @@
 (library
  (name ppx_view_test)
- (libraries ocaml-migrate-parsetree viewast)
+ (libraries
+  compiler-libs.common ocaml-migrate-parsetree viewast
+  base
+  ppx_inline_test.config
+  ppx_expect.config
+  ppx_expect.common)
  (inline_tests)
  (preprocess (pps ppx_expect ppx_view_rewriter)))

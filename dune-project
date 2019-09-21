@@ -2,6 +2,7 @@
 (name ppx_view)
 
 (generate_opam_files true)
+(implicit_transitive_deps false)
 
 (license Apache-2.0)
 (maintainers "Xavier Clerc")
