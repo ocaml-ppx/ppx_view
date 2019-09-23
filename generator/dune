@@ -1,3 +1,7 @@
 (executables
  (names generator)
- (libraries ocaml-migrate-parsetree ppx_view_common))
+ (libraries
+  result
+  compiler-libs.common
+  ocaml-migrate-parsetree
+  ppx_view_common))

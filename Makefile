@@ -1,20 +1,20 @@
 INSTALL_ARGS := $(if $(PREFIX),--prefix $(PREFIX),)
 
 all:
-	jbuilder build --dev
+	dune build
 
 install:
-	jbuilder install $(INSTALL_ARGS)
+	dune install $(INSTALL_ARGS)
 
 uninstall:
-	jbuilder uninstall $(INSTALL_ARGS)
+	dune uninstall $(INSTALL_ARGS)
 
 reinstall: uninstall reinstall
 
 test:
-	jbuilder runtest --dev
+	dune runtest
 
 clean:
-	jbuilder clean
+	dune clean
 
 .PHONY: all install uninstall reinstall test clean
