@@ -15,6 +15,7 @@
  (description "A ppx rewriter that provides pattern matching on abstract types by
 transforming patterns into views/expressions.")
  (depends
+  (ocaml (and (>= 4.07) (< 4.08)))
   dune
   ocaml-migrate-parsetree
   (ppx_expect :with-test)))
