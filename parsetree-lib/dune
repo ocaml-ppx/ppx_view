@@ -3,8 +3,11 @@
  (public_name ppx_view.ast)
  (libraries
   compiler-libs.common
+  ocaml-compiler-libs.shadow
+  ocaml-compiler-libs.common
   ocaml-migrate-parsetree
   viewlib)
+ (flags :standard -open Ocaml_shadow)
  (preprocess (pps ppx_view_rewriter)))
 
 (rule

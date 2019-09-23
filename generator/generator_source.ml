@@ -1,3 +1,5 @@
+open Ocaml_common
+
 let parse read write path f =
   let ast = read Format.std_formatter ~tool_name:"ppx_view_generator" path in
   let temp_file = Filename.temp_file "ppx_view" "ast" in
