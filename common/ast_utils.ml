@@ -1,8 +1,8 @@
-module Fixed_ocaml = Migrate_parsetree.OCaml_405
-module Fixed_ast = Migrate_parsetree.Ast_405
+module Fixed_ocaml = Migrate_parsetree.OCaml_407
+module Fixed_ast = Migrate_parsetree.Ast_407
 open Fixed_ast
 
-let fixed = "405"
+let fixed = "407"
 
 let make_str s =
   { Location.txt = s; loc = Location.none; }
@@ -128,8 +128,12 @@ let rec qualify_core_type_desc ~types desc =
     Ptyp_constr (lid, qualify_core_type_list ~types l)
   | Ptyp_object (l, closed) ->
     Ptyp_object (List.map
-                   (fun (str, attrs, ctyp) ->
-                      (str, attrs, qualify_core_type ~types ctyp))
+                   (function
+                     | Otag (label, attrs, core_type) ->
+                       Otag (label, attrs
+                            , qualify_core_type ~types core_type)
+                     | Oinherit core_type ->
+                       Oinherit (qualify_core_type ~types core_type))
                    l,
                  closed)
   | Ptyp_class (lid, l) ->

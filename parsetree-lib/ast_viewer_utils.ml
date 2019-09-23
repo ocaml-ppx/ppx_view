@@ -1,4 +1,4 @@
-open Migrate_parsetree.Ast_404
+open Migrate_parsetree.Ast_407
 open Viewlib
 
 module Attribute = struct
@@ -44,12 +44,12 @@ module Attribute = struct
     | Parsetree.Rinherit _typ ->
       View.error
 
-  (* XXX not in 4.04 let object_field view value =
+  let object_field view value =
     match value with
     | Parsetree.Otag (_label, attrs, _typ) ->
       choice_over_attributes attrs view value
     | Parsetree.Oinherit _typ->
-      View.error*)
+      View.error
 
   let pattern view value =
     choice_over_attributes value.Parsetree.ppat_attributes view value
@@ -298,7 +298,7 @@ let register_ppx_driver ~name ?reset_args ?args rewriter =
     ~name
     ?reset_args
     ?args
-    (module Migrate_parsetree.OCaml_404)
+    (module Migrate_parsetree.OCaml_407)
     rewriter
 
 type cases = Parsetree.case list
