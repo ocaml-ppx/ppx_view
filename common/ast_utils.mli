@@ -1,5 +1,5 @@
-module Fixed_ocaml : module type of Migrate_parsetree.OCaml_405
-module Fixed_ast : module type of Migrate_parsetree.Ast_405
+module Fixed_ocaml : module type of Migrate_parsetree.OCaml_407
+module Fixed_ast : module type of Migrate_parsetree.Ast_407
 open Fixed_ast
 
 

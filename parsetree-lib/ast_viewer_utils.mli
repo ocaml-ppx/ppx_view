@@ -1,4 +1,4 @@
-open Migrate_parsetree.Ast_404
+open Migrate_parsetree.Ast_407
 open Viewlib
 
 module Attribute : sig
@@ -13,7 +13,7 @@ module Attribute : sig
 
   val row_field               : (Parsetree.row_field,               'i, 'o) view
 
-  (* XXX only since 4.06 val object_field : (Parsetree.object_field, 'i, 'o) view*)
+  val object_field : (Parsetree.object_field, 'i, 'o) view
 
   val pattern                 : (Parsetree.pattern,                 'i, 'o) view
 
@@ -127,7 +127,7 @@ val register_ppx_driver
    : name:string
   -> ?reset_args:(unit -> unit)
   -> ?args:(Arg.key * Arg.spec * Arg.doc) list
-  -> Migrate_parsetree.Versions.OCaml_404.types Migrate_parsetree.Driver.rewriter
+  -> Migrate_parsetree.Versions.OCaml_407.types Migrate_parsetree.Driver.rewriter
   -> unit
 
 type cases = Parsetree.case list (* this synonym does not exist before 4.06 *)

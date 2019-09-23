@@ -10,6 +10,7 @@ license: "Apache-2.0"
 homepage: "https://github.com/ocaml-ppx/ppx_view"
 bug-reports: "https://github.com/ocaml-ppx/ppx_view/issues"
 depends: [
+  "ocaml" {>= "4.07" & < "4.08"}
   "dune"
   "ocaml-migrate-parsetree"
   "ppx_expect" {with-test}
