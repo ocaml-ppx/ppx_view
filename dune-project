@@ -4,7 +4,7 @@
 (generate_opam_files true)
 (implicit_transitive_deps false)
 
-(license Apache-2.0)
+(license MIT)
 (maintainers "Xavier Clerc")
 (authors "Xavier Clerc")
 (source (github ocaml-ppx/ppx_view))

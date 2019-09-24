@@ -6,7 +6,7 @@ A ppx rewriter that provides pattern matching on abstract types by
 transforming patterns into views/expressions."""
 maintainer: ["Xavier Clerc"]
 authors: ["Xavier Clerc"]
-license: "Apache-2.0"
+license: "MIT"
 homepage: "https://github.com/ocaml-ppx/ppx_view"
 bug-reports: "https://github.com/ocaml-ppx/ppx_view/issues"
 depends: [
